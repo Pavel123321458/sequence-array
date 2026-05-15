@@ -1,9 +1,13 @@
 #include <iostream>
+#include <limits>
 #include "demo.h"
+#include "ArraySequence.h"
 
 int main() {
+    // Sequence<int>* d = new ArraySequence<int>();
+
     int choice = 0;
-    while (choice != 7) {
+    while (choice != 11) {
         std::cout << "----------------------------------------" << std::endl;
         std::cout << "DATA STRUCTURES DEMONSTRATION" << std::endl;
         std::cout << "----------------------------------------" << std::endl;
@@ -13,10 +17,20 @@ int main() {
         std::cout << "4. ImmutableArraySequence" << std::endl;
         std::cout << "5. MutableListSequence" << std::endl;
         std::cout << "6. ImmutableListSequence" << std::endl;
-        std::cout << "7. Exit" << std::endl;
+        std::cout << "7. Stack" << std::endl;
+        std::cout << "8. Queue" << std::endl;
+        std::cout << "9. Deque" << std::endl;
+        std::cout << "10. Boolean (Power Set)" << std::endl;
+        std::cout << "11. Exit" << std::endl;
         std::cout << "----------------------------------------" << std::endl;
         std::cout << "Choose option: ";
-        std::cin >> choice;
+
+        if (!(std::cin >> choice)) {
+            std::cout << "Invalid input! Please enter a number." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
 
         switch (choice) {
             case 1: demoDynamicArray(); break;
@@ -25,7 +39,11 @@ int main() {
             case 4: demoImmutableArraySequence(); break;
             case 5: demoMutableListSequence(); break;
             case 6: demoImmutableListSequence(); break;
-            case 7: std::cout << "Exiting." << std::endl; break;
+            case 7: demoStack(); break;
+            case 8: demoQueue(); break;
+            case 9: demoDeque(); break;
+            case 10: demoBoolean(); break;
+            case 11: std::cout << "Exiting." << std::endl; break;
             default: std::cout << "Invalid choice!" << std::endl;
         }
     }

@@ -1,6 +1,6 @@
 cd build
-cmake ..
 cmake --build .
 ./tests.exe
 ./main.exe
 
+./stack_tests.exe

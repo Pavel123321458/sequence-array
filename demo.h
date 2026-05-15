@@ -6,3 +6,7 @@ void demoMutableArraySequence();
 void demoImmutableArraySequence();
 void demoMutableListSequence();
 void demoImmutableListSequence();
+void demoStack();
+void demoQueue();
+void demoDeque();
+void demoBoolean();

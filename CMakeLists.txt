@@ -13,9 +13,14 @@ FetchContent_MakeAvailable(googletest)
 
 # Основная программа
 add_executable(main main.cpp demo.cpp)
+
 # Тесты
 add_executable(tests tests.cpp)
 target_link_libraries(tests GTest::gtest_main)
 
+add_executable(stack_tests stack_tests.cpp)
+target_link_libraries(stack_tests GTest::gtest_main)
+
 enable_testing()
 add_test(NAME AllTests COMMAND tests)
+add_test(NAME StackTests COMMAND stack_tests)

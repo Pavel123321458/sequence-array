@@ -1,3 +1,5 @@
+#include "Queue.h"
+#include "Deque.h"
 #include <iostream>
 #include "DynamicArray.h"
 #include "LinkedList.h"
@@ -5,6 +7,8 @@
 #include "ImmutableArraySequence.h"
 #include "MutableListSequence.h"
 #include "ImmutableListSequence.h"
+#include "Stack.h"
+#include "Boolean.h"
 
 void printArray(DynamicArray<int>& arr) {
     std::cout << "[";
@@ -177,4 +181,151 @@ void demoImmutableListSequence() {
     std::cout << "Original NOT changed: ";
     printSequence(&seq);
     delete app;
+}
+
+
+void demoStack() {
+    std::cout << "\n=== Stack ===" << std::endl;
+
+    Stack<int> stack;
+    std::cout << "Created empty stack" << std::endl;
+    std::cout << "IsEmpty: " << (stack.IsEmpty() ? "true" : "false") << std::endl;
+
+    stack.Push(10);
+    stack.Push(20);
+    stack.Push(30);
+    std::cout << "After Push(10, 20, 30): length = " << stack.GetLength()
+              << ", peek = " << stack.Peek() << std::endl;
+
+    std::cout << "Pop: " << stack.Pop() << std::endl;
+    std::cout << "After Pop: length = " << stack.GetLength()
+              << ", peek = " << stack.Peek() << std::endl;
+
+    // Map
+    Stack<int>* mapped = stack.Map([](const int& x) { return x * x; });
+    std::cout << "Map (square): ";
+    while (!mapped->IsEmpty())
+        std::cout << mapped->Pop() << " ";
+    std::cout << std::endl;
+    delete mapped;
+
+    // Where
+    stack.Push(30);
+    stack.Push(40);
+    Stack<int>* filtered = stack.Where([](const int& x) { return x % 20 == 0; });
+    std::cout << "Where (multiples of 20): ";
+    while (!filtered->IsEmpty())
+        std::cout << filtered->Pop() << " ";
+    std::cout << std::endl;
+    delete filtered;
+
+    // Reduce
+    int sum = stack.Reduce([](const int& x, const int& acc) { return acc + x; }, 0);
+    std::cout << "Reduce (sum): " << sum << std::endl;
+
+    // ContainsSubsequence
+    int subItems[] = {10, 20};
+    MutableArraySequence<int> sub(subItems, 2);
+    std::cout << "Contains [10, 20]: "
+              << (stack.ContainsSubsequence(&sub) ? "true" : "false") << std::endl;
+}
+
+void demoBoolean() {
+    std::cout << "\n=== Boolean (Power Set) ===" << std::endl;
+
+    int items[] = {1, 2, 3};
+    MutableArraySequence<int> seq(items, 3);
+    std::cout << "Original set: [1, 2, 3]" << std::endl;
+
+    Sequence<Sequence<int>*>* result = BuildBoolean(&seq);
+    std::cout << "Total subsets: " << result->GetLength() << std::endl;
+
+    for (int i = 0; i < result->GetLength(); ++i) {
+        Sequence<int>* sub = result->Get(i);
+        std::cout << "  {";
+        for (int j = 0; j < sub->GetLength(); ++j) {
+            std::cout << sub->Get(j);
+            if (j < sub->GetLength() - 1) std::cout << ", ";
+        }
+        std::cout << "}" << std::endl;
+    }
+
+    // Очистка
+    for (int i = 0; i < result->GetLength(); ++i)
+        delete result->Get(i);
+    delete result;
+}
+
+
+
+void demoQueue() {
+    std::cout << "\n=== Queue ===" << std::endl;
+
+    Queue<int> q;
+    std::cout << "Created empty queue" << std::endl;
+    std::cout << "IsEmpty: " << (q.IsEmpty() ? "true" : "false") << std::endl;
+
+    q.Enqueue(10);
+    q.Enqueue(20);
+    q.Enqueue(30);
+    std::cout << "After Enqueue(10, 20, 30): length = " << q.GetLength()
+              << ", peek = " << q.Peek() << std::endl;
+
+    std::cout << "Dequeue: " << q.Dequeue() << std::endl;
+    std::cout << "After Dequeue: length = " << q.GetLength()
+              << ", peek = " << q.Peek() << std::endl;
+
+    // Map
+    Queue<int>* mapped = q.Map([](const int& x) { return x * 10; });
+    std::cout << "Map (x10): ";
+    while (!mapped->IsEmpty())
+        std::cout << mapped->Dequeue() << " ";
+    std::cout << std::endl;
+    delete mapped;
+
+    // Where
+    q.Enqueue(40);
+    q.Enqueue(50);
+    Queue<int>* filtered = q.Where([](const int& x) { return x >= 30; });
+    std::cout << "Where (>= 30): ";
+    while (!filtered->IsEmpty())
+        std::cout << filtered->Dequeue() << " ";
+    std::cout << std::endl;
+    delete filtered;
+
+    // Reduce
+    int sum = q.Reduce([](const int& x, const int& acc) { return acc + x; }, 0);
+    std::cout << "Reduce (sum): " << sum << std::endl;
+}
+
+void demoDeque() {
+    std::cout << "\n=== Deque ===" << std::endl;
+
+    Deque<int> d;
+    std::cout << "Created empty deque" << std::endl;
+
+    d.PushFront(10);
+    d.PushBack(20);
+    d.PushFront(5);
+    std::cout << "After PushFront(10), PushBack(20), PushFront(5): length = "
+              << d.GetLength() << ", front = " << d.PeekFront()
+              << ", back = " << d.PeekBack() << std::endl;
+
+    std::cout << "PopFront: " << d.PopFront() << std::endl;
+    std::cout << "PopBack: " << d.PopBack() << std::endl;
+    std::cout << "Remaining: length = " << d.GetLength()
+              << ", front = " << d.PeekFront() << std::endl;
+
+    // Map
+    d.PushBack(30);
+    Deque<int>* mapped = d.Map([](const int& x) { return x * 2; });
+    std::cout << "Map (x2): ";
+    while (!mapped->IsEmpty())
+        std::cout << mapped->PopFront() << " ";
+    std::cout << std::endl;
+    delete mapped;
+
+    // Reduce
+    int sum = d.Reduce([](const int& x, const int& acc) { return acc + x; }, 0);
+    std::cout << "Reduce (sum): " << sum << std::endl;
 }
