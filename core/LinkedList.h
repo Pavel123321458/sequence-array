@@ -14,6 +14,24 @@ private:
     int length;
 
 public:
+    class Iterator {
+    private:
+        Node* current;
+    public:
+        Iterator(Node* node) : current(node) {}
+        T& operator*() { return current->data; }
+        T* operator->() { return &current->data; }
+        Iterator& operator++() { current = current->next; return *this; }
+        Iterator operator++(int) { Iterator tmp = *this; current = current->next; return tmp; }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
+        bool operator==(const Iterator& other) const { return current == other.current; }
+    };
+
+    Iterator begin() { return Iterator(head); }
+    Iterator end() { return Iterator(nullptr); }
+
+
+    
     LinkedList(T* items, int count) : head(nullptr), length(0) {
         for (int i = 0; i < count; ++i)
             Append(items[i]);
@@ -29,6 +47,24 @@ public:
         }
     }
 
+    LinkedList<T>& operator=(const LinkedList<T>& other) {
+        if (this != &other) {
+            while (head) {
+                Node* temp = head;
+                head = head->next;
+                delete temp;
+            }
+            head = nullptr;
+            length = 0;
+            Node* current = other.head;
+            while (current) {
+                Append(current->data);
+                current = current->next;
+            }
+        }
+        return *this;
+    }
+
     ~LinkedList() {
         while (head) {
             Node* temp = head;
@@ -36,7 +72,6 @@ public:
             delete temp;
         }
     }
-
 
     T GetFirst() const {
         if (!head) throw std::out_of_range("IndexOutOfRange: list is empty");
@@ -78,13 +113,11 @@ public:
         return length;
     }
 
-
     void Append(T item) {
         Node* newNode = new Node(item);
         if (!head) {
             head = newNode;
-        } 
-        else {
+        } else {
             Node* current = head;
             while (current->next)
                 current = current->next;
@@ -121,6 +154,37 @@ public:
         Node* current = list->head;
         while (current) {
             result->Append(current->data);
+            current = current->next;
+        }
+        return result;
+    }
+
+    LinkedList<T>* Map(T (*f)(const T&)) {
+        LinkedList<T>* result = new LinkedList<T>();
+        Node* current = head;
+        while (current) {
+            result->Append(f(current->data));
+            current = current->next;
+        }
+        return result;
+    }
+
+    LinkedList<T>* Where(bool (*pred)(const T&)) {
+        LinkedList<T>* result = new LinkedList<T>();
+        Node* current = head;
+        while (current) {
+            if (pred(current->data))
+                result->Append(current->data);
+            current = current->next;
+        }
+        return result;
+    }
+
+    T Reduce(T (*f)(const T&, const T&), T init) {
+        T result = init;
+        Node* current = head;
+        while (current) {
+            result = f(current->data, result);
             current = current->next;
         }
         return result;

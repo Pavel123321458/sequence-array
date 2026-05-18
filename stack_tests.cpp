@@ -1,17 +1,18 @@
-#include "Queue.h"
-#include "Deque.h"
 #include <gtest/gtest.h>
 #include "Stack.h"
+#include "Queue.h"
+#include "Deque.h"
 #include "MutableArraySequence.h"
 #include "ImmutableArraySequence.h"
 #include "MutableListSequence.h"
+#include "LinkedList.h"
 #include "Boolean.h"
 
 // =============================================
-// Основные операции
+// Stack
 // =============================================
 TEST(StackTest, PushPopPeek) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     EXPECT_TRUE(stack.IsEmpty());
     EXPECT_EQ(stack.GetLength(), 0);
 
@@ -33,17 +34,17 @@ TEST(StackTest, PushPopPeek) {
 }
 
 TEST(StackTest, PopOnEmptyThrows) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     EXPECT_THROW(stack.Pop(), std::out_of_range);
 }
 
 TEST(StackTest, PeekOnEmptyThrows) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     EXPECT_THROW(stack.Peek(), std::out_of_range);
 }
 
 TEST(StackTest, MultiplePushPop) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     for (int i = 0; i < 100; ++i)
         stack.Push(i);
     EXPECT_EQ(stack.GetLength(), 100);
@@ -54,104 +55,83 @@ TEST(StackTest, MultiplePushPop) {
     EXPECT_TRUE(stack.IsEmpty());
 }
 
-// =============================================
-// Map
-// =============================================
-int square(const int& x) { return x * x; }
-
 TEST(StackTest, Map) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
     stack.Push(2);
     stack.Push(3);
 
-    Stack<int>* result = stack.Map(square);
+    Stack<int>* result = stack.Map([](const int& x) { return x * x; });
     EXPECT_EQ(result->GetLength(), 3);
     EXPECT_EQ(result->Pop(), 9);
     EXPECT_EQ(result->Pop(), 4);
     EXPECT_EQ(result->Pop(), 1);
     delete result;
 
-    // Исходный не изменился
     EXPECT_EQ(stack.GetLength(), 3);
     EXPECT_EQ(stack.Peek(), 3);
 }
 
-// =============================================
-// Where
-// =============================================
-bool isEven(const int& x) { return x % 2 == 0; }
-
 TEST(StackTest, Where) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
     stack.Push(2);
     stack.Push(3);
     stack.Push(4);
 
-    Stack<int>* result = stack.Where(isEven);
+    Stack<int>* result = stack.Where([](const int& x) { return x % 2 == 0; });
     EXPECT_EQ(result->GetLength(), 2);
     EXPECT_EQ(result->Pop(), 4);
     EXPECT_EQ(result->Pop(), 2);
     delete result;
 
-    // Исходный не изменился
     EXPECT_EQ(stack.GetLength(), 4);
 }
 
 TEST(StackTest, WhereNoMatch) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
     stack.Push(3);
     stack.Push(5);
 
-    Stack<int>* result = stack.Where(isEven);
+    Stack<int>* result = stack.Where([](const int& x) { return x % 2 == 0; });
     EXPECT_EQ(result->GetLength(), 0);
     EXPECT_TRUE(result->IsEmpty());
     delete result;
 }
 
-// =============================================
-// Reduce
-// =============================================
-int sum(const int& x, const int& acc) { return acc + x; }
-int multiply(const int& x, const int& acc) { return acc * x; }
-
 TEST(StackTest, Reduce) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
     stack.Push(2);
     stack.Push(3);
 
-    int result = stack.Reduce(sum, 0);
-    EXPECT_EQ(result, 6);  // 1 + 2 + 3
+    int result = stack.Reduce([](const int& x, const int& acc) { return acc + x; }, 0);
+    EXPECT_EQ(result, 6);
 }
 
 TEST(StackTest, ReduceProduct) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(2);
     stack.Push(3);
     stack.Push(4);
 
-    int result = stack.Reduce(multiply, 1);
-    EXPECT_EQ(result, 24);  // 2 * 3 * 4
+    int result = stack.Reduce([](const int& x, const int& acc) { return acc * x; }, 1);
+    EXPECT_EQ(result, 24);
 }
 
 TEST(StackTest, ReduceEmpty) {
-    Stack<int> stack;
-    int result = stack.Reduce(sum, 100);
-    EXPECT_EQ(result, 100);  // начальное значение без изменений
+    Stack<int> stack(new MutableArraySequence<int>());
+    int result = stack.Reduce([](const int& x, const int& acc) { return acc + x; }, 100);
+    EXPECT_EQ(result, 100);
 }
 
-// =============================================
-// Concat
-// =============================================
 TEST(StackTest, Concat) {
-    Stack<int> s1;
+    Stack<int> s1(new MutableArraySequence<int>());
     s1.Push(1);
     s1.Push(2);
 
-    Stack<int> s2;
+    Stack<int> s2(new MutableArraySequence<int>());
     s2.Push(3);
     s2.Push(4);
 
@@ -163,16 +143,12 @@ TEST(StackTest, Concat) {
     EXPECT_EQ(result->Pop(), 1);
     delete result;
 
-    // Исходные не изменились
     EXPECT_EQ(s1.GetLength(), 2);
     EXPECT_EQ(s2.GetLength(), 2);
 }
 
-// =============================================
-// GetSubsequence
-// =============================================
 TEST(StackTest, GetSubsequence) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(10);
     stack.Push(20);
     stack.Push(30);
@@ -184,14 +160,11 @@ TEST(StackTest, GetSubsequence) {
     EXPECT_EQ(sub->Pop(), 20);
     delete sub;
 
-    EXPECT_EQ(stack.GetLength(), 4);  // исходный не изменился
+    EXPECT_EQ(stack.GetLength(), 4);
 }
 
-// =============================================
-// ContainsSubsequence
-// =============================================
 TEST(StackTest, ContainsSubsequence) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
     stack.Push(2);
     stack.Push(3);
@@ -207,7 +180,7 @@ TEST(StackTest, ContainsSubsequence) {
 }
 
 TEST(StackTest, ContainsSubsequenceTooLong) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
 
     int items[] = {1, 2, 3};
@@ -216,7 +189,7 @@ TEST(StackTest, ContainsSubsequenceTooLong) {
 }
 
 TEST(StackTest, ContainsSubsequenceEmpty) {
-    Stack<int> stack;
+    Stack<int> stack(new MutableArraySequence<int>());
     stack.Push(1);
 
     int items[] = {1};
@@ -224,13 +197,9 @@ TEST(StackTest, ContainsSubsequenceEmpty) {
     EXPECT_TRUE(stack.ContainsSubsequence(&sub));
 }
 
-// =============================================
-// Стек на базе ImmutableArraySequence
-// =============================================
 TEST(StackTest, ImmutableSequence) {
     int items[] = {1, 2, 3};
-    ImmutableArraySequence<int>* seq = new ImmutableArraySequence<int>(items, 3);
-    Stack<int> stack(seq);
+    Stack<int> stack(new ImmutableArraySequence<int>(items, 3));
 
     EXPECT_EQ(stack.GetLength(), 3);
     EXPECT_EQ(stack.Peek(), 3);
@@ -240,13 +209,9 @@ TEST(StackTest, ImmutableSequence) {
     EXPECT_EQ(stack.Peek(), 4);
 }
 
-// =============================================
-// Стек на базе ListSequence
-// =============================================
 TEST(StackTest, ListSequence) {
     int items[] = {10, 20};
-    MutableListSequence<int>* seq = new MutableListSequence<int>(items, 2);
-    Stack<int> stack(seq);
+    Stack<int> stack(new MutableListSequence<int>(items, 2));
 
     EXPECT_EQ(stack.GetLength(), 2);
     EXPECT_EQ(stack.Peek(), 20);
@@ -259,13 +224,15 @@ TEST(StackTest, ListSequence) {
     EXPECT_EQ(stack.Pop(), 10);
 }
 
-
-TEST(BooleanTest, Basic){
+// =============================================
+// Boolean
+// =============================================
+TEST(BooleanTest, Basic) {
     int items[] = {1, 2, 3};
     MutableArraySequence<int> seq(items, 3);
 
     Sequence<Sequence<int>*>* result = BuildBoolean(&seq);
-    EXPECT_EQ(result->GetLength(), 8);  // 2^3 = 8
+    EXPECT_EQ(result->GetLength(), 8);
 
     bool foundEmpty = false;
     for (int i = 0; i < result->GetLength(); ++i) {
@@ -279,12 +246,11 @@ TEST(BooleanTest, Basic){
     delete result;
 }
 
-
 // =============================================
 // Queue
 // =============================================
 TEST(QueueTest, EnqueueDequeue) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     EXPECT_TRUE(q.IsEmpty());
     EXPECT_EQ(q.GetLength(), 0);
 
@@ -306,17 +272,17 @@ TEST(QueueTest, EnqueueDequeue) {
 }
 
 TEST(QueueTest, DequeueOnEmptyThrows) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     EXPECT_THROW(q.Dequeue(), std::out_of_range);
 }
 
 TEST(QueueTest, PeekOnEmptyThrows) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     EXPECT_THROW(q.Peek(), std::out_of_range);
 }
 
 TEST(QueueTest, FIFOOrder) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -326,7 +292,7 @@ TEST(QueueTest, FIFOOrder) {
 }
 
 TEST(QueueTest, Map) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -341,7 +307,7 @@ TEST(QueueTest, Map) {
 }
 
 TEST(QueueTest, Where) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -355,7 +321,7 @@ TEST(QueueTest, Where) {
 }
 
 TEST(QueueTest, Reduce) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -363,11 +329,11 @@ TEST(QueueTest, Reduce) {
 }
 
 TEST(QueueTest, Concat) {
-    Queue<int> q1;
+    Queue<int> q1(new LinkedList<int>());
     q1.Enqueue(1);
     q1.Enqueue(2);
 
-    Queue<int> q2;
+    Queue<int> q2(new LinkedList<int>());
     q2.Enqueue(3);
     q2.Enqueue(4);
 
@@ -381,7 +347,7 @@ TEST(QueueTest, Concat) {
 }
 
 TEST(QueueTest, GetSubsequence) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(10);
     q.Enqueue(20);
     q.Enqueue(30);
@@ -394,7 +360,7 @@ TEST(QueueTest, GetSubsequence) {
 }
 
 TEST(QueueTest, ContainsSubsequence) {
-    Queue<int> q;
+    Queue<int> q(new LinkedList<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -410,7 +376,7 @@ TEST(QueueTest, ContainsSubsequence) {
 // Deque
 // =============================================
 TEST(DequeTest, PushPopFront) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushFront(10);
     d.PushFront(20);
     EXPECT_EQ(d.GetLength(), 2);
@@ -420,7 +386,7 @@ TEST(DequeTest, PushPopFront) {
 }
 
 TEST(DequeTest, PushPopBack) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushBack(10);
     d.PushBack(20);
     EXPECT_EQ(d.GetLength(), 2);
@@ -430,10 +396,10 @@ TEST(DequeTest, PushPopBack) {
 }
 
 TEST(DequeTest, MixedPushPop) {
-    Deque<int> d;
-    d.PushFront(1);   // [1]
-    d.PushBack(2);     // [1, 2]
-    d.PushFront(0);    // [0, 1, 2]
+    Deque<int> d(new LinkedList<int>());
+    d.PushFront(1);
+    d.PushBack(2);
+    d.PushFront(0);
     EXPECT_EQ(d.PeekFront(), 0);
     EXPECT_EQ(d.PeekBack(), 2);
     EXPECT_EQ(d.PopFront(), 0);
@@ -442,17 +408,17 @@ TEST(DequeTest, MixedPushPop) {
 }
 
 TEST(DequeTest, PopFrontOnEmptyThrows) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     EXPECT_THROW(d.PopFront(), std::out_of_range);
 }
 
 TEST(DequeTest, PopBackOnEmptyThrows) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     EXPECT_THROW(d.PopBack(), std::out_of_range);
 }
 
 TEST(DequeTest, Map) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushBack(1);
     d.PushBack(2);
     d.PushBack(3);
@@ -466,7 +432,7 @@ TEST(DequeTest, Map) {
 }
 
 TEST(DequeTest, Where) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushBack(1);
     d.PushBack(2);
     d.PushBack(3);
@@ -480,7 +446,7 @@ TEST(DequeTest, Where) {
 }
 
 TEST(DequeTest, Reduce) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushBack(5);
     d.PushBack(10);
     d.PushBack(15);
@@ -488,11 +454,11 @@ TEST(DequeTest, Reduce) {
 }
 
 TEST(DequeTest, Concat) {
-    Deque<int> d1;
+    Deque<int> d1(new LinkedList<int>());
     d1.PushBack(1);
     d1.PushBack(2);
 
-    Deque<int> d2;
+    Deque<int> d2(new LinkedList<int>());
     d2.PushBack(3);
     d2.PushBack(4);
 
@@ -506,7 +472,7 @@ TEST(DequeTest, Concat) {
 }
 
 TEST(DequeTest, GetSubsequence) {
-    Deque<int> d;
+    Deque<int> d(new LinkedList<int>());
     d.PushBack(10);
     d.PushBack(20);
     d.PushBack(30);

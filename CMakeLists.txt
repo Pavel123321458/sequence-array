@@ -4,6 +4,9 @@ project(LabSequence)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include_directories(core array_sequence list_sequence containers .)
+
+
 include(FetchContent)
 FetchContent_Declare(
     googletest
@@ -11,10 +14,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Основная программа
 add_executable(main main.cpp demo.cpp)
 
-# Тесты
 add_executable(tests tests.cpp)
 target_link_libraries(tests GTest::gtest_main)
 

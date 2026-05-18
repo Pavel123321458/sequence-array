@@ -8,7 +8,7 @@ private:
     int size;
     int capacity;
 
-    void ensureCapacity(int needed){
+    void ensureCapacity(int needed) {
         if (needed <= capacity) return;
         int newCapacity = (capacity == 0) ? 1 : capacity * 2;
         while (newCapacity < needed)
@@ -22,7 +22,25 @@ private:
     }
 
 public:
-    DynamicArray(T* items, int count) : size(count), capacity(count){
+    class Iterator {
+    private:
+        T* ptr;
+    public:
+        Iterator(T* p) : ptr(p) {}
+        T& operator*() { return *ptr; }
+        T* operator->() { return ptr; }
+        Iterator& operator++() { ++ptr; return *this; }
+        Iterator operator++(int) { Iterator tmp = *this; ++ptr; return tmp; }
+        bool operator!=(const Iterator& other) const { return ptr != other.ptr; }
+        bool operator==(const Iterator& other) const { return ptr == other.ptr; }
+    };
+
+    Iterator begin() { return Iterator(data); }
+    Iterator end() { return Iterator(data + size); }
+
+
+    
+    DynamicArray(T* items, int count) : size(count), capacity(count) {
         if (count < 0)
             throw std::invalid_argument("Negative size");
         data = new T[count];
@@ -42,10 +60,6 @@ public:
             data[i] = other.data[i];
     }
 
-    ~DynamicArray() {
-        delete[] data;
-    }
-
     DynamicArray<T>& operator=(const DynamicArray<T>& other) {
         if (this != &other) {
             delete[] data;
@@ -56,6 +70,10 @@ public:
                 data[i] = other.data[i];
         }
         return *this;
+    }
+
+    ~DynamicArray() {
+        delete[] data;
     }
 
     T Get(int index) const {

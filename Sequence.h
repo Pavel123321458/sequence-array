@@ -16,4 +16,38 @@ public:
     virtual Sequence<T>* Prepend(const T& item) = 0;
     virtual Sequence<T>* InsertAt(const T& item, int index) = 0;
     virtual Sequence<T>* Concat(Sequence<T>* list) = 0;
+
+    virtual Sequence<T>* Map(T (*f)(const T&)) {
+        int len = GetLength();
+        T* items = new T[len];
+        for (int i = 0; i < len; ++i)
+            items[i] = f(Get(i));
+        Sequence<T>* result = CreateInstance(items, len);
+        delete[] items;
+        return result;
+    }
+
+    virtual Sequence<T>* Where(bool (*pred)(const T&)) {
+        int len = GetLength();
+        T* items = new T[len];
+        int newLen = 0;
+        for (int i = 0; i < len; ++i) {
+            T val = Get(i);
+            if (pred(val))
+                items[newLen++] = val;
+        }
+        Sequence<T>* result = CreateInstance(items, newLen);
+        delete[] items;
+        return result;
+    }
+
+    virtual T Reduce(T (*f)(const T&, const T&), T init) {
+        T result = init;
+        for (int i = 0; i < GetLength(); ++i)
+            result = f(Get(i), result);
+        return result;
+    }
+
+protected:
+    virtual Sequence<T>* CreateInstance(T* items, int count) const = 0;
 };

@@ -4,7 +4,7 @@
 template <class T>
 class ImmutableArraySequence : public ArraySequence<T> {
 protected:
-    virtual ArraySequence<T>* CreateInstance(T* items, int count) const override {
+    virtual Sequence<T>* CreateInstance(T* items, int count) const override {
         return new ImmutableArraySequence<T>(items, count);
     }
 
