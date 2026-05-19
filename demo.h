@@ -10,3 +10,8 @@ void demoStack();
 void demoQueue();
 void demoDeque();
 void demoBoolean();
+void demoLazySequence();
+void demoLazySequenceManual();
+void demoLazySequenceStress();
+void demoLazySequenceAuto();
+void demoStream();

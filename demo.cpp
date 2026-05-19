@@ -9,6 +9,10 @@
 #include "Queue.h"
 #include "Deque.h"
 #include "Boolean.h"
+#include <chrono>
+#include <limits>
+#include "LazySequenceFactory.h"
+#include "Stream.h"
 
 void printArray(DynamicArray<int>& arr) {
     std::cout << "[";
@@ -250,4 +254,135 @@ void demoBoolean() {
     }
     for (int i = 0; i < result->GetLength(); ++i) delete result->Get(i);
     delete result;
+}
+
+
+void demoLazySequence() {
+    std::cout << "\n=== LazySequence ===" << std::endl;
+
+    std::cout << "Fibonacci (first 10): ";
+    LazySequence<int>* fib = FibonacciSequence();
+    for (int i = 0; i < 10; ++i)
+        std::cout << fib->Get(i) << " ";
+    std::cout << std::endl;
+    std::cout << "Materialized: " << fib->GetMaterializedCount() << std::endl;
+    delete fib;
+
+    std::cout << "Factorial (first 7): ";
+    LazySequence<int>* fact = FactorialSequence();
+    for (int i = 0; i < 7; ++i)
+        std::cout << fact->Get(i) << " ";
+    std::cout << std::endl;
+    delete fact;
+
+    std::cout << "Natural numbers (1, 50, 100): ";
+    LazySequence<int>* nat = NaturalNumbers();
+    std::cout << nat->Get(0) << ", " << nat->Get(49) << ", " << nat->Get(99);
+    std::cout << " (materialized: " << nat->GetMaterializedCount() << ")" << std::endl;
+    delete nat;
+}
+
+std::string EncodeRLE(ReadOnlyStream<char>* input) {
+    std::string result;
+    while (!input->IsEndOfStream()) {
+        char c = input->Read();
+        int count = 1;
+        while (!input->IsEndOfStream() && count < 9) {
+            size_t pos = input->GetPosition();
+            char next = input->Read();
+            if (next == c) {
+                count++;
+            } else {
+                input->Seek(pos);
+                break;
+            }
+        }
+        result += std::to_string(count) + c;
+    }
+    return result;
+}
+
+void demoStream() {
+    std::cout << "\n=== Stream ===" << std::endl;
+
+    WriteOnlyStream<int> wstream;
+    wstream.Write(10);
+    wstream.Write(20);
+    wstream.Write(30);
+    wstream.Write(40);
+    wstream.Write(50);
+    std::cout << "Written 5 elements" << std::endl;
+
+    ReadOnlyStream<int> rstream(wstream.GetSequence(), false);
+    std::cout << "Reading: ";
+    while (!rstream.IsEndOfStream())
+        std::cout << rstream.Read() << " ";
+    std::cout << std::endl;
+
+    char items[] = {'A', 'A', 'A', 'B', 'B', 'C', 'C', 'C', 'C'};
+    MutableArraySequence<char>* seq = new MutableArraySequence<char>(items, 9);
+    ReadOnlyStream<char> charStream(seq);
+    std::cout << "RLE encoding of ";
+    for (int i = 0; i < 9; ++i) std::cout << items[i];
+    std::cout << ": " << EncodeRLE(&charStream) << std::endl;
+}
+
+
+void demoLazySequenceManual() {
+    std::cout << "\n=== LazySequence - Manual Test ===" << std::endl;
+    std::cout << "Enter how many Fibonacci numbers to generate: ";
+    int n;
+    std::cin >> n;
+
+    LazySequence<int>* fib = FibonacciSequence();
+    std::cout << "First " << n << " Fibonacci numbers:" << std::endl;
+    for (int i = 0; i < n; ++i)
+        std::cout << fib->Get(i) << " ";
+    std::cout << std::endl;
+    std::cout << "Materialized: " << fib->GetMaterializedCount() << std::endl;
+    delete fib;
+}
+
+void demoLazySequenceStress() {
+    std::cout << "\n=== LazySequence - Stress Test ===" << std::endl;
+    std::cout << "Computing 1 000 000th Fibonacci number..." << std::endl;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    LazySequence<int>* fib = FibonacciSequence();
+    // Берём 100000-й (миллионный может переполнить int)
+    int val = fib->Get(100000);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Time: " << duration.count() << " ms" << std::endl;
+    std::cout << "Materialized: " << fib->GetMaterializedCount() << " elements" << std::endl;
+    delete fib;
+}
+
+void demoLazySequenceAuto() {
+    std::cout << "\n=== LazySequence - Automated Test ===" << std::endl;
+
+    // Заготовленные эталонные значения
+    int expectedFib[] = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34};
+    int expectedFact[] = {1, 1, 2, 6, 24, 120, 720, 5040};
+
+    LazySequence<int>* fib = FibonacciSequence();
+    LazySequence<int>* fact = FactorialSequence();
+
+    bool fibOk = true, factOk = true;
+
+    for (int i = 0; i < 10; ++i) {
+        if (fib->Get(i) != expectedFib[i]) fibOk = false;
+    }
+    for (int i = 0; i < 8; ++i) {
+        if (fact->Get(i) != expectedFact[i]) factOk = false;
+    }
+
+    std::cout << "Fibonacci test: " << (fibOk ? "PASSED" : "FAILED") << std::endl;
+    std::cout << "Factorial test: " << (factOk ? "PASSED" : "FAILED") << std::endl;
+
+    delete fib;
+    delete fact;
+
+    std::cout << "\nAuto test complete." << std::endl;
 }

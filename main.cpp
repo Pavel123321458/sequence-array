@@ -1,13 +1,10 @@
 #include <iostream>
 #include <limits>
 #include "demo.h"
-#include "ArraySequence.h"
 
 int main() {
-    // Sequence<int>* d = new ArraySequence<int>();
-
     int choice = 0;
-    while (choice != 11) {
+    while (choice != 16) {
         std::cout << "----------------------------------------" << std::endl;
         std::cout << "DATA STRUCTURES DEMONSTRATION" << std::endl;
         std::cout << "----------------------------------------" << std::endl;
@@ -21,7 +18,12 @@ int main() {
         std::cout << "8. Queue" << std::endl;
         std::cout << "9. Deque" << std::endl;
         std::cout << "10. Boolean (Power Set)" << std::endl;
-        std::cout << "11. Exit" << std::endl;
+        std::cout << "11. LazySequence (demo)" << std::endl;
+        std::cout << "12. LazySequence (manual)" << std::endl;
+        std::cout << "13. LazySequence (stress test)" << std::endl;
+        std::cout << "14. LazySequence (auto test)" << std::endl;
+        std::cout << "15. Stream" << std::endl;
+        std::cout << "16. Exit" << std::endl;
         std::cout << "----------------------------------------" << std::endl;
         std::cout << "Choose option: ";
 
@@ -43,7 +45,12 @@ int main() {
             case 8: demoQueue(); break;
             case 9: demoDeque(); break;
             case 10: demoBoolean(); break;
-            case 11: std::cout << "Exiting." << std::endl; break;
+            case 11: demoLazySequence(); break;
+            case 12: demoLazySequenceManual(); break;
+            case 13: demoLazySequenceStress(); break;
+            case 14: demoLazySequenceAuto(); break;
+            case 15: demoStream(); break;
+            case 16: std::cout << "Exiting." << std::endl; break;
             default: std::cout << "Invalid choice!" << std::endl;
         }
     }

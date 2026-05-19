@@ -25,3 +25,7 @@ target_link_libraries(stack_tests GTest::gtest_main)
 enable_testing()
 add_test(NAME AllTests COMMAND tests)
 add_test(NAME StackTests COMMAND stack_tests)
+
+add_executable(lazy_tests lazy_tests.cpp)
+target_link_libraries(lazy_tests GTest::gtest_main)
+add_test(NAME LazyTests COMMAND lazy_tests)
