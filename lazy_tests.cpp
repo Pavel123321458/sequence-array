@@ -3,26 +3,6 @@
 #include "LazySequenceFactory.h"
 #include "Stream.h"
 
-// Вспомогательная функция RLE
-std::string EncodeRLE(ReadOnlyStream<char>* input) {
-    std::string result;
-    while (!input->IsEndOfStream()) {
-        char c = input->Read();
-        int count = 1;
-        while (!input->IsEndOfStream() && count < 9) {
-            size_t pos = input->GetPosition();
-            char next = input->Read();
-            if (next == c) {
-                count++;
-            } else {
-                input->Seek(pos);
-                break;
-            }
-        }
-        result += std::to_string(count) + c;
-    }
-    return result;
-}
 
 // =============================================
 // LazySequence
@@ -112,8 +92,7 @@ TEST(StreamTest, WriteOnlyStream) {
     EXPECT_EQ(stream.GetPosition(), 1);
     stream.Write(200);
     EXPECT_EQ(stream.GetPosition(), 2);
-    Sequence<int>* seq = stream.GetSequence();
-    EXPECT_EQ(seq->Get(0), 100);
+    Sequence<int>* seq = stream.GetData();    EXPECT_EQ(seq->Get(0), 100);
     EXPECT_EQ(seq->Get(1), 200);
 }
 

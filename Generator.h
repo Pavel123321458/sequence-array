@@ -1,23 +1,21 @@
 #pragma once
 #include <functional>
 #include <stdexcept>
+#include "MutableArraySequence.h"
 
 template <class T>
 class Generator {
 private:
-    std::function<T(const std::vector<T>&)> rule;  // правило порождения
-    std::vector<T> history;                         // уже порождённые элементы
-    int generated;                                  // сколько элементов порождено
-    int maxCount;                                   // максимальное количество (-1 — бесконечно)
+    std::function<T(const MutableArraySequence<T>&)> rule;
+    MutableArraySequence<T> history;
+    int generated;
+    int maxCount;
 
 public:
-    Generator(std::function<T(const std::vector<T>&)> r, T* initial, int count, int max = -1)
-        : rule(r), generated(count), maxCount(max) {
-        for (int i = 0; i < count; ++i)
-            history.push_back(initial[i]);
-    }
+    Generator() : rule(nullptr), history(), generated(0), maxCount(0) {}
 
-    Generator() : rule(nullptr), generated(0), maxCount(0) {}
+    Generator(std::function<T(const MutableArraySequence<T>&)> r, T* initial, int count, int max = -1)
+        : rule(r), history(initial, count), generated(count), maxCount(max) {}
 
     bool HasNext() const {
         return maxCount == -1 || generated < maxCount;
@@ -26,22 +24,22 @@ public:
     T GetNext() {
         if (!HasNext())
             throw std::out_of_range("Generator: no more elements");
-        if (generated >= (int)history.size()) {
+        if (generated >= history.GetLength()) {
             T next = rule(history);
-            history.push_back(next);
+            history.Append(next);
         }
-        return history[generated++];
+        return history.Get(generated++);
     }
 
     T Get(int index) {
         if (maxCount != -1 && index >= maxCount)
             throw std::out_of_range("Generator: index out of range");
-        while (index >= (int)history.size()) {
+        while (index >= history.GetLength()) {
             if (!HasNext())
                 throw std::out_of_range("Generator: index out of range");
-            history.push_back(rule(history));
+            history.Append(rule(history));
         }
-        return history[index];
+        return history.Get(index);
     }
 
     int GetGeneratedCount() const {
@@ -49,6 +47,6 @@ public:
     }
 
     int GetMaterializedCount() const {
-        return history.size();
+        return history.GetLength();
     }
 };

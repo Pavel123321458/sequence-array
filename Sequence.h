@@ -6,6 +6,17 @@ class Sequence {
 public:
     virtual ~Sequence() = default;
 
+    class Iterator {
+    public:
+        virtual ~Iterator() = default;
+        virtual T& operator*() = 0;
+        virtual Iterator& operator++() = 0;
+        virtual bool operator!=(const Iterator& other) const = 0;
+    };
+
+    virtual Iterator* begin() = 0;
+    virtual Iterator* end() = 0;
+
     virtual T GetFirst() const = 0;
     virtual T GetLast() const = 0;
     virtual T Get(int index) const = 0;

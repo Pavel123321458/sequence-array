@@ -13,15 +13,24 @@ public:
     ArraySequence(const ArraySequence<T>& other) : array(new DynamicArray<T>(*other.array)) {}
     virtual ~ArraySequence() { delete array; }
 
+    typename Sequence<T>::Iterator* begin() override {
+        return new typename DynamicArray<T>::Iterator(array->begin()->getPtr());
+    }
+    typename Sequence<T>::Iterator* end() override {
+        return new typename DynamicArray<T>::Iterator(array->end()->getPtr());
+    }
+
     T GetFirst() const override {
         if (array->GetSize() == 0) throw std::out_of_range("Index out of range: sequence is empty");
         return array->Get(0);
     }
+
     T GetLast() const override {
         int size = array->GetSize();
         if (size == 0) throw std::out_of_range("Index out of range: sequence is empty");
         return array->Get(size - 1);
     }
+
     T Get(int index) const override { return array->Get(index); }
     int GetLength() const override { return array->GetSize(); }
 
@@ -37,7 +46,6 @@ public:
         return result;
     }
 
-    // Immutable-реализация по умолчанию
     Sequence<T>* Append(const T& item) override {
         int size = array->GetSize();
         T* items = new T[size + 1];
@@ -47,6 +55,7 @@ public:
         delete[] items;
         return result;
     }
+
     Sequence<T>* Prepend(const T& item) override {
         int size = array->GetSize();
         T* items = new T[size + 1];
@@ -56,6 +65,7 @@ public:
         delete[] items;
         return result;
     }
+
     Sequence<T>* InsertAt(const T& item, int index) override {
         int size = array->GetSize();
         if (index < 0 || index > size) throw std::out_of_range("Index out of range");
@@ -67,6 +77,7 @@ public:
         delete[] items;
         return result;
     }
+
     Sequence<T>* Concat(Sequence<T>* other) override {
         if (!other) throw std::invalid_argument("Concat: nullptr");
         int size = array->GetSize();

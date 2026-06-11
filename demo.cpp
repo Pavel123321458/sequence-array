@@ -190,7 +190,7 @@ void demoStack() {
 
 void demoQueue() {
     std::cout << "\n=== Queue ===" << std::endl;
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     std::cout << "Created empty queue" << std::endl;
     std::cout << "IsEmpty: " << (q.IsEmpty() ? "true" : "false") << std::endl;
     q.Enqueue(10); q.Enqueue(20); q.Enqueue(30);
@@ -216,7 +216,7 @@ void demoQueue() {
 
 void demoDeque() {
     std::cout << "\n=== Deque ===" << std::endl;
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     std::cout << "Created empty deque" << std::endl;
     d.PushFront(10); d.PushBack(20); d.PushFront(5);
     std::cout << "After PushFront(10), PushBack(20), PushFront(5): length = "
@@ -282,25 +282,6 @@ void demoLazySequence() {
     delete nat;
 }
 
-std::string EncodeRLE(ReadOnlyStream<char>* input) {
-    std::string result;
-    while (!input->IsEndOfStream()) {
-        char c = input->Read();
-        int count = 1;
-        while (!input->IsEndOfStream() && count < 9) {
-            size_t pos = input->GetPosition();
-            char next = input->Read();
-            if (next == c) {
-                count++;
-            } else {
-                input->Seek(pos);
-                break;
-            }
-        }
-        result += std::to_string(count) + c;
-    }
-    return result;
-}
 
 void demoStream() {
     std::cout << "\n=== Stream ===" << std::endl;
@@ -313,8 +294,7 @@ void demoStream() {
     wstream.Write(50);
     std::cout << "Written 5 elements" << std::endl;
 
-    ReadOnlyStream<int> rstream(wstream.GetSequence(), false);
-    std::cout << "Reading: ";
+    ReadOnlyStream<int> rstream(wstream.GetData(), false);    std::cout << "Reading: ";
     while (!rstream.IsEndOfStream())
         std::cout << rstream.Read() << " ";
     std::cout << std::endl;

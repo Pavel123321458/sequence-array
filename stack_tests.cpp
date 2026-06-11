@@ -250,7 +250,7 @@ TEST(BooleanTest, Basic) {
 // Queue
 // =============================================
 TEST(QueueTest, EnqueueDequeue) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     EXPECT_TRUE(q.IsEmpty());
     EXPECT_EQ(q.GetLength(), 0);
 
@@ -272,17 +272,17 @@ TEST(QueueTest, EnqueueDequeue) {
 }
 
 TEST(QueueTest, DequeueOnEmptyThrows) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     EXPECT_THROW(q.Dequeue(), std::out_of_range);
 }
 
 TEST(QueueTest, PeekOnEmptyThrows) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     EXPECT_THROW(q.Peek(), std::out_of_range);
 }
 
 TEST(QueueTest, FIFOOrder) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -292,7 +292,7 @@ TEST(QueueTest, FIFOOrder) {
 }
 
 TEST(QueueTest, Map) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -307,7 +307,7 @@ TEST(QueueTest, Map) {
 }
 
 TEST(QueueTest, Where) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -321,7 +321,7 @@ TEST(QueueTest, Where) {
 }
 
 TEST(QueueTest, Reduce) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
@@ -329,11 +329,11 @@ TEST(QueueTest, Reduce) {
 }
 
 TEST(QueueTest, Concat) {
-    Queue<int> q1(new LinkedList<int>());
+    Queue<int> q1(new MutableListSequence<int>());
     q1.Enqueue(1);
     q1.Enqueue(2);
 
-    Queue<int> q2(new LinkedList<int>());
+    Queue<int> q2(new MutableListSequence<int>());
     q2.Enqueue(3);
     q2.Enqueue(4);
 
@@ -347,7 +347,7 @@ TEST(QueueTest, Concat) {
 }
 
 TEST(QueueTest, GetSubsequence) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(10);
     q.Enqueue(20);
     q.Enqueue(30);
@@ -360,15 +360,15 @@ TEST(QueueTest, GetSubsequence) {
 }
 
 TEST(QueueTest, ContainsSubsequence) {
-    Queue<int> q(new LinkedList<int>());
+    Queue<int> q(new MutableListSequence<int>());
     q.Enqueue(1);
     q.Enqueue(2);
     q.Enqueue(3);
 
-    LinkedList<int> sub1(new int[2]{1, 2}, 2);
+    MutableListSequence<int> sub1(new int[2]{1, 2}, 2);
     EXPECT_TRUE(q.ContainsSubsequence(&sub1));
 
-    LinkedList<int> sub2(new int[2]{1, 3}, 2);
+    MutableListSequence<int> sub2(new int[2]{1, 3}, 2);
     EXPECT_FALSE(q.ContainsSubsequence(&sub2));
 }
 
@@ -376,7 +376,7 @@ TEST(QueueTest, ContainsSubsequence) {
 // Deque
 // =============================================
 TEST(DequeTest, PushPopFront) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushFront(10);
     d.PushFront(20);
     EXPECT_EQ(d.GetLength(), 2);
@@ -386,7 +386,7 @@ TEST(DequeTest, PushPopFront) {
 }
 
 TEST(DequeTest, PushPopBack) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushBack(10);
     d.PushBack(20);
     EXPECT_EQ(d.GetLength(), 2);
@@ -396,7 +396,7 @@ TEST(DequeTest, PushPopBack) {
 }
 
 TEST(DequeTest, MixedPushPop) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushFront(1);
     d.PushBack(2);
     d.PushFront(0);
@@ -408,17 +408,17 @@ TEST(DequeTest, MixedPushPop) {
 }
 
 TEST(DequeTest, PopFrontOnEmptyThrows) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     EXPECT_THROW(d.PopFront(), std::out_of_range);
 }
 
 TEST(DequeTest, PopBackOnEmptyThrows) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     EXPECT_THROW(d.PopBack(), std::out_of_range);
 }
 
 TEST(DequeTest, Map) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushBack(1);
     d.PushBack(2);
     d.PushBack(3);
@@ -432,7 +432,7 @@ TEST(DequeTest, Map) {
 }
 
 TEST(DequeTest, Where) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushBack(1);
     d.PushBack(2);
     d.PushBack(3);
@@ -446,7 +446,7 @@ TEST(DequeTest, Where) {
 }
 
 TEST(DequeTest, Reduce) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushBack(5);
     d.PushBack(10);
     d.PushBack(15);
@@ -454,11 +454,11 @@ TEST(DequeTest, Reduce) {
 }
 
 TEST(DequeTest, Concat) {
-    Deque<int> d1(new LinkedList<int>());
+    Deque<int> d1(new MutableListSequence<int>());
     d1.PushBack(1);
     d1.PushBack(2);
 
-    Deque<int> d2(new LinkedList<int>());
+    Deque<int> d2(new MutableListSequence<int>());
     d2.PushBack(3);
     d2.PushBack(4);
 
@@ -472,7 +472,7 @@ TEST(DequeTest, Concat) {
 }
 
 TEST(DequeTest, GetSubsequence) {
-    Deque<int> d(new LinkedList<int>());
+    Deque<int> d(new MutableListSequence<int>());
     d.PushBack(10);
     d.PushBack(20);
     d.PushBack(30);

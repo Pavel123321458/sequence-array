@@ -1,42 +1,41 @@
 #pragma once
 #include "LazySequence.h"
-#include <vector>
 #include <functional>
 
-// Факториал: 1, 1, 2, 6, 24, 120, ...
+// Факториал
 LazySequence<int>* FactorialSequence() {
     int initial[] = {1};
-    std::function<int(const std::vector<int>&)> rule = [](const std::vector<int>& history) -> int {
-        int n = history.size();
-        return history.back() * n;
+    std::function<int(const MutableArraySequence<int>&)> rule = [](const MutableArraySequence<int>& history) -> int {
+        int n = history.GetLength();
+        return history.Get(n - 1) * n;
     };
     return new LazySequence<int>(rule, initial, 1);
 }
 
-// Числа Фибоначчи: 0, 1, 1, 2, 3, 5, 8, 13, ...
+// Числа Фибоначчи
 LazySequence<int>* FibonacciSequence() {
     int initial[] = {0, 1};
-    std::function<int(const std::vector<int>&)> rule = [](const std::vector<int>& history) -> int {
-        int n = history.size();
-        return history[n - 1] + history[n - 2];
+    std::function<int(const MutableArraySequence<int>&)> rule = [](const MutableArraySequence<int>& history) -> int {
+        int n = history.GetLength();
+        return history.Get(n - 1) + history.Get(n - 2);
     };
     return new LazySequence<int>(rule, initial, 2);
 }
 
-// Степени двойки: 1, 2, 4, 8, 16, 32, ...
+// Степени двойки
 LazySequence<int>* PowersOfTwo() {
     int initial[] = {1};
-    std::function<int(const std::vector<int>&)> rule = [](const std::vector<int>& history) -> int {
-        return history.back() * 2;
+    std::function<int(const MutableArraySequence<int>&)> rule = [](const MutableArraySequence<int>& history) -> int {
+        return history.Get(history.GetLength() - 1) * 2;
     };
     return new LazySequence<int>(rule, initial, 1);
 }
 
-// Натуральные числа: 1, 2, 3, 4, 5, ...
+// Натуральные числа
 LazySequence<int>* NaturalNumbers() {
     int initial[] = {1};
-    std::function<int(const std::vector<int>&)> rule = [](const std::vector<int>& history) -> int {
-        return history.back() + 1;
+    std::function<int(const MutableArraySequence<int>&)> rule = [](const MutableArraySequence<int>& history) -> int {
+        return history.Get(history.GetLength() - 1) + 1;
     };
     return new LazySequence<int>(rule, initial, 1);
 }

@@ -8,6 +8,10 @@ private:
     Sequence<T>* data;
 
 public:
+    typename Sequence<T>::Iterator* begin() { return data->begin(); }
+    typename Sequence<T>::Iterator* end() { return data->end(); }
+
+
     Stack(Sequence<T>* seq) : data(seq) {}
 
     Stack<T>& operator=(const Stack<T>& other) {
